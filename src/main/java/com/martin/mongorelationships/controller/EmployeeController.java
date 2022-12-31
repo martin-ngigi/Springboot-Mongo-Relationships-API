@@ -1,13 +1,17 @@
 package com.martin.mongorelationships.controller;
 
 import com.martin.mongorelationships.dao.EmployeeDAO;
+import com.martin.mongorelationships.model.Address;
 import com.martin.mongorelationships.model.Employee;
 import com.martin.mongorelationships.service.SequenceGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.repository.Update;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @RestController
 @RequestMapping(path = "/api/v1/employees")
@@ -75,6 +79,39 @@ public class EmployeeController {
         else {
             throw new RuntimeException("Employee not found with id "+id);
         }
+    }
+
+    //http://localhost:8080/api/v1/employees/update-employee/1
+    @PutMapping("/update-employee-address/{id}")
+    public  String updateEmployeeAddress(@RequestBody Employee employee, @PathVariable ("id") Long id){
+        //validate data
+        Employee employeeFromDb = employeeDAO.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Error: employee with id "+id+" does not exist."));
+
+        //get data from request
+        String name = employee.getName();
+        String gender = employee.getGender();
+        String country = employee.getCountry();
+        String dob = employee.getDob();
+
+        //set data
+        employeeFromDb.setName(name);
+        employeeFromDb.setGender(gender);
+        employeeFromDb.setCountry(country);
+        employeeFromDb.setDob(dob);
+
+        employeeDAO.save(employeeFromDb);
+
+//        Address address= new Address();
+//
+//        employeeDAO.update(Employee.class)
+//                .matching(where("id").is(employee.getId()))
+//                .apply(new Update().push("address", address))
+//                .first();
+
+        return "Address added successfully";
+
+
     }
 
 }

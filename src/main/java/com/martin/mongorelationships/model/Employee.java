@@ -2,6 +2,9 @@ package com.martin.mongorelationships.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+
+import java.util.List;
 
 @Document(collection = "employee")
 public class Employee {
@@ -13,6 +16,10 @@ public class Employee {
     private String gender;
     private String dob;
     private String country;
+
+    @DocumentReference(lazy = true)
+    //private Address primaryAddress; //OneToOne i.e. one customer has one address
+    private List<Address> primaryAddress; // OneToMany i.e. one customer has many addresses
 
     public Long getId() {
         return id;
@@ -54,6 +61,16 @@ public class Employee {
         this.country = country;
     }
 
+    //OneToOne i.e. one customer has one address
+//    public Address getPrimaryAddress() {
+//        return primaryAddress;
+//    }
+
+
+    public List<Address> getPrimaryAddress() {
+        return primaryAddress;
+    }
+
     @Override
     public String toString() {
         return "Employee{" +
@@ -62,6 +79,7 @@ public class Employee {
                 ", gender='" + gender + '\'' +
                 ", dob='" + dob + '\'' +
                 ", country='" + country + '\'' +
+                ", primaryAddress=" + primaryAddress +
                 '}';
     }
 }
